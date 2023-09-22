@@ -1,5 +1,8 @@
 #include "test.h"
-
+#include <assert.h>
+#include <stdlib.h> 
+#include <stdbool.h>
+#include <stdio.h>
 #include <string.h> // for testing generate_splits()
 
 /*
@@ -34,12 +37,52 @@ void generate_selections(int a[], int n, int k, int b[], void *data, void (*proc
  * The dictionary parameter is an array of words, sorted in dictionary order.
  * nwords is the number of words in this dictionary.
  */
+bool isWordInDictionary(const char *word, const char *dictionary[]) {
+    for (int i = 0; dictionary[i] != NULL; i++) {
+        if (strcmp(word, dictionary[i]) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+// Function to find all splittable combinations of a word
+void findSplittableCombinations(const char *word, const char *current, int index,const char *dictionary[],void (*process_split)(char buf[], void *data),void *data) {
+    int len = strlen(word);
+
+    // Base case: If the entire word is processed, print the current combination
+    if (index == len) {
+        process_split(current,data);
+        return;
+    }
+
+    // Try adding characters one by one
+    for (int i = index; i < len; i++) {
+        char substring[100]; // Assuming a maximum word length of 100
+        strncpy(substring, word + index, i - index + 1);
+        substring[i - index + 1] = '\0';
+
+        // Check if the current substring is in the dictionary
+        if (isWordInDictionary(substring,dictionary)) {
+            if (index == 0) {
+                findSplittableCombinations(word, substring, i + 1,dictionary,process_split,data);
+            } else {
+                char newCombination[200]; // Assuming a maximum combination length of 200
+                sprintf(newCombination, "%s %s", current, substring);
+                findSplittableCombinations(word, newCombination, i + 1,dictionary,process_split,data);
+            }
+        }
+    }
+}
+
 void generate_splits(const char *source, const char *dictionary[], int nwords, char buf[], void *data, void (*process_split)(char buf[], void *data))
 {
-    strcpy(buf, "art is toil");
-    process_split(buf, data);
-    strcpy(buf, "artist oil");
-    process_split(buf, data);
+    // strcpy(buf, "art is toil");
+    // process_split(buf, data);
+    // strcpy(buf, "artist oil");
+    // process_split(buf, data);
+    findSplittableCombinations(source, "", 0,dictionary,process_split,data);
 }
 
 /*
