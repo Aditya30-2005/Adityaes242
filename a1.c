@@ -46,16 +46,99 @@ void generate_splits(const char *source, const char *dictionary[], int nwords, c
  * Transform a[] so that it becomes the previous permutation of the elements in it.
  * If a[] is the first permutation, leave it unchanged.
  */
-void previous_permutation(int a[], int n)
+void swap(int *a, int *b)
 {
-    a[0] = 1;
-    a[1] = 5;
-    a[2] = 4;
-    a[3] = 6;
-    a[4] = 3;
-    a[5] = 2;
+    int t = *a;
+    *a = *b;
+    *b = t;
 }
 
+void merge_2_arrays(int a[], int n, int b[], int m, int array[]) {
+    int i = 0; int j = 0; int k = 0;
+
+    while (i < n && j < m) {
+        if (a[i] >= b[j]) {
+            array[k] = a[i];
+            i++;
+        } else {
+            array[k] = b[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n) {
+        array[k] = a[i];
+        i++;
+        k++;
+    }
+
+    while (j < m) {
+        array[k] = b[j];
+        j++;
+        k++;
+    }
+}
+
+void merge_sort(int arr[], int len) {
+    if (len <= 1)
+        return;
+
+    int mid = len / 2;
+    int left[mid];
+    int right[len - mid];
+
+    for (int i = 0; i < mid; i++)
+        left[i] = arr[i];
+
+    for (int i = mid; i < len; i++)
+        right[i - mid] = arr[i];
+
+    merge_sort(left, mid);
+    merge_sort(right, len - mid);
+    merge_2_arrays(left, mid, right, len - mid, arr);
+}
+
+
+void previous_permutation(int a[], int n)
+{
+    // a[0] = 1;
+    // a[1] = 5;
+    // a[2] = 4;
+    // a[3] = 6;
+    // a[4] = 3;
+    // a[5] = 2;
+    int flag = 1;
+    for (int i = 0;i<n-1;i++){
+        if (a[i+1]<a[i]){
+            flag = 0;
+        }
+    }
+    if (flag == 1){
+        return;
+    }
+    int x = -1;
+    for (int i = n-1;i>=0;i--){
+         if (a[i] < a[i - 1]){
+            x = i - 1;
+            break;
+         }
+    }
+
+    swap(&a[x],&a[n-1]);
+    int d = x + 1;
+    int b = n - 1;
+    int c[n-x-1];
+    for (int i = 0;i<=b;i++){
+        int z = i+d;
+        c[i] = a[z];
+    }
+    merge_sort(c,n-x-1);
+    for (int i = 0;i<n-x-1;i++){
+        int y = d+i;
+        a[y] = c[i];
+    }
+}
 /* Write your tests here. Use the previous assignment for reference. */
 
 typedef struct {
