@@ -15,20 +15,49 @@
  */
 void generate_selections(int a[], int n, int k, int b[], void *data, void (*process_selection)(int *b, int k, void *data))
 {
-    b[0] = 2; b[1] = 1;
-    process_selection(b, 2, data);
-    b[0] = 2; b[1] = 6;
-    process_selection(b, 2, data);
-    b[0] = 2; b[1] = 5;
-    process_selection(b, 2, data);
-    b[0] = 1; b[1] = 6;
-    process_selection(b, 2, data);
-    b[0] = 1; b[1] = 5;
-    process_selection(b, 2, data);
-    b[0] = 6; b[1] = 5;
-    process_selection(b, 2, data);
-}
+//     b[0] = 2; b[1] = 1;
+//     process_selection(b, 2, data);
+//     b[0] = 2; b[1] = 6;
+//     process_selection(b, 2, data);
+//     b[0] = 2; b[1] = 5;
+//     process_selection(b, 2, data);
+//     b[0] = 1; b[1] = 6;
+//     process_selection(b, 2, data);
+//     b[0] = 1; b[1] = 5;
+//     process_selection(b, 2, data);
+//     b[0] = 6; b[1] = 5;
+//     process_selection(b, 2, data);
+        int indices[k];
+    
+    // Initialize the indices array with the first combination
+    for (int i = 0; i < k; i++) {
+        indices[i] = i;
+        b[i] = a[i];
+    }
 
+    while (1) {
+        process_selection(b, k, data);
+
+        int j = k - 1;
+        while (j >= 0 && indices[j] == n - k + j) {
+            j--;
+        }
+
+        if (j < 0) {
+            break;
+        }
+
+
+        indices[j]++;
+        b[j] = a[indices[j]];
+
+
+        for (int l = j + 1; l < k; l++) {
+            indices[l] = indices[l - 1] + 1;
+            b[l] = a[indices[l]];
+        }
+    }
+}
 /*
  * See Exercise 2 (a), page 94 in Jeff Erickson's textbook.
  * The exercise only asks you to count the possible splits.
